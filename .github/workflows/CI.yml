@@ -57,4 +57,29 @@ jobs:
              - sabryp3/qr-generator/api:1.0.0      
           file: api/Dockerfile
 
- 
+   buildnode:
+
+    runs-on: ubuntu-latest
+    env:
+      S3_BUCKET_NAME: ${{ vars.S3_BUCKET_NAME }}
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          # Semantic version range syntax or exact version of a Node.js version
+          node-version: 24
+          # Optional - x64 or x86 architecture, defaults to x64
+          architecture: 'x64'
+          cache: 'npm'
+          cache-dependency-path: 'front-end-nextjs/package-lock.json'
+      - run: npm ci
+        working-directory: front-end-nextjs
+      - run: npm test
+        working-directory: front-end-nextjs
+
