@@ -1,0 +1,100 @@
+name: Building QR generator images
+
+on: 
+  workflow_dispatch:
+
+jobs:
+  buildapi:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          # Semantic version range syntax or exact version of a Python version
+          python-version: '3.12.x'
+          # Optional - x64 or x86 architecture, defaults to x64
+          architecture: 'x64'
+      
+      # You can test your matrix by printing the current Python version
+      - name: Display Python version
+        run: python -c "import sys; print(sys.version)"
+      - name: Install dependencies
+        run: |
+              python -m pip install --upgrade pip
+              pip install --no-cache-dir -r requirements.txt 
+      - name: Test with pytest
+        run: pytest test.py
+
+ # This job builds and pushes the Docker image to the GitHub Packages container registry.       
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+    needs: build
+      #
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - uses: mr-smithers-excellent/docker-build-push@v6
+        with:
+            image: hivebox
+            registry: ghcr.io/sabryp3
+            tags: v1, latest
+            username: sabryp3
+            password: ${{ secrets.TOKEN }}
+  DeployToEKS:
+    needs: Build-and-Push-image
+    runs-on: ubuntu-latest
+    steps:
+        - name: Checkout source code
+          uses: actions/checkout@v4
+
+        - name: Configure AWS credentials
+          uses: aws-actions/configure-aws-credentials@v4
+          with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: ${{ vars.AWS_REGION }}
+        
+        - name: Get Kubernetes config
+          id: getconfig
+          run: aws eks update-kubeconfig --name ${{ vars.EKS_CLUSTER }} --region ${{ vars.AWS_REGION }}
+
+        - name: Login to githubIO
+          run: |
+            kubectl get secret github-sec || \
+            kubectl create secret docker-registry github-sec \
+              --docker-server=ghcr.io/sabryp3 \
+              --docker-username=sabryp3 \
+              --docker-password=${{secrets.TOKEN}}
+              #### 
+        - name: Create namespace if not exists
+          run: |
+            kubectl get namespace monitoring || kubectl create namespace monitoring
+
+
+        - name: Deploy with Helm
+          uses: bitovi/github-actions-deploy-eks-helm@v1.2.12
+          with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: ${{ vars.AWS_REGION }}
+            cluster-name: ${{ vars.EKS_CLUSTER }}
+            chart-path: Helm
+            name: hivebox-stack
+            helm-extra-args: --force
+        
+        - name: Show Pods
+          run: kubectl get pod -A
+        
+        - name: Show SVC
+          run: kubectl get svc
