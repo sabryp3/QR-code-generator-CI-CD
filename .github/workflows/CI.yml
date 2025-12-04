@@ -51,9 +51,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: 
-             - sabryp3/qr-generator/api:latest
-             - sabryp3/qr-generator/api:1.0.0      
+          tags: sabryp3/qr-generator/api:latest
           file: api/Dockerfile
 
   buildnode:
