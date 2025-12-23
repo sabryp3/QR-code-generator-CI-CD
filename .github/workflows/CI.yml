@@ -46,14 +46,17 @@ jobs:
       
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+      - name: set tag
+        id: tag
+        run: echo "TAG=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: 
-            - sabryp3/qrgenerator-api:latest
-            - sabryp3/qrgenerator-api:${{ github.sha | truncate(7, false) }}
+          tags: |
+            sabryp3/qrgenerator-api:latest
+            sabryp3/qrgenerator-api:${{steps.tag.outputs.TAG}}
 
           file: api/Dockerfile
 
@@ -92,12 +95,16 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       
+      - name: set tag
+        id: tag
+        run: echo "TAG=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: 
-            - sabryp3/qrgenerator-nodejs:latest
-            - sabryp3/qrgenerator-nodejs:${{ github.sha | truncate(7, false) }}
+          tags: |
+            sabryp3/qrgenerator-nodejs:latest
+            sabryp3/qrgenerator-nodejs:${{steps.tag.outputs.TAG}}
           file: front-end-nextjs/Dockerfile
           context: front-end-nextjs 
