@@ -105,5 +105,6 @@ jobs:
           push: true
           tags: |
             sabryp3/qrgenerator-nodejs:latest
+            sabryp3/qrgenerator-nodejs:${{steps.tag.outputs.TAG}}
           file: front-end-nextjs/Dockerfile
           context: front-end-nextjs 
