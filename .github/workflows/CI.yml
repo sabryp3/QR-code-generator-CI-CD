@@ -51,7 +51,10 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: sabryp3/qr-generator:api-latest
+          tags: 
+            - sabryp3/qrgenerator-api:latest
+            - sabryp3/qrgenerator-api:${{ github.sha | truncate(7, false) }}
+
           file: api/Dockerfile
 
   buildnode:
@@ -93,6 +96,8 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: sabryp3/qr-generator:nodejs-latest
+          tags: 
+            - sabryp3/qrgenerator-nodejs:latest
+            - sabryp3/qrgenerator-nodejs:${{ github.sha | truncate(7, false) }}
           file: front-end-nextjs/Dockerfile
           context: front-end-nextjs 
