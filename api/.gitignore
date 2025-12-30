@@ -160,3 +160,14 @@ cython_debug/
 #.idea/api/.env
 api/.env.example
 api/.env
+
+
+# Terraform files
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+crash.log
+override.tf
+override.tf.json
+*.tfplan
