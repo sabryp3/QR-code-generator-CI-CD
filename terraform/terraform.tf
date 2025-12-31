@@ -20,5 +20,9 @@ terraform {
       source  = "hashicorp/helm"
       version = "~> 2.16"
     }
+    htpasswd_password = {
+      source  = "loafoe/htpasswd"
+      version = "1.5.0"
+    }
   }
 }
