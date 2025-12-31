@@ -164,6 +164,7 @@ api/.env
 
 # Terraform files
 *.terraform/*
+terraform/.terraform/
 *.tfstate
 *.tfstate.*
 *.tfvars
