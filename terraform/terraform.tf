@@ -1,7 +1,7 @@
 terraform {
   required_version = "~> 1.0"
   backend "s3" {
-    bucket         = "tf-state-bucket"
+    bucket         = "tf-sabry-state-bucket"
     key            = "gitops-actions/state.tfstate"
     region         = "eu-west-2"
     dynamodb_table = "tf-db-table"
