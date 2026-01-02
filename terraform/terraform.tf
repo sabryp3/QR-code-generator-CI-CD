@@ -1,8 +1,8 @@
 terraform {
   required_version = "~> 1.0"
   backend "s3" {
-    bucket         = "tf-sabry-state-bucket"
-    key            = "gitops-actions/state.tfstate"
+    bucket         = "infrabucket-p3"
+    key            = "terraform/state.tfstate"
     region         = "eu-west-2"
     dynamodb_table = "tf-db-table"
     encrypt        = true
@@ -20,9 +20,7 @@ terraform {
       source  = "hashicorp/helm"
       version = "~> 2.16"
     }
-    htpasswd_password = {
-      source  = "loafoe/htpasswd"
-      version = "1.5.0"
+
     }
   }
 }

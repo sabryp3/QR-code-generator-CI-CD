@@ -50,29 +50,19 @@ jobs:
         id: plan
         run: terraform plan -no-color -input=false -out planfile
         continue-on-error: true
-        env:
-          TF_VAR_argo_pass: ${{ secrets.ARGOCD_PASSWORD }}
+       
 
       - name: Terraform plan status
         if: steps.plan.outcome == 'failure'
         run: exit 1
-        env:
-          TF_VAR_argo_pass: ${{ secrets.ARGOCD_PASSWORD }}
-
 
       - name: Terraform apply
         id: apply
         run: terraform apply -auto-approve -input=false -parallelism=1 planfile
-        env:
-          TF_VAR_argo_pass: ${{ secrets.ARGOCD_PASSWORD }}
-
-
+    
       - name: Get Kubernetes config
         id: getconfig
         if: steps.apply.outcome == 'success'
         run: aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER }} --region ${{ env.AWS_REGION }} 
 
-      - name: Install Ingress controller
-        if: steps.apply.outcome == 'success' && steps.getconfig.outcome == 'success'
-        run: kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.12.0-beta.0/deploy/static/provider/aws/deploy.yaml
-  
+      - run: kubectl get node-version
