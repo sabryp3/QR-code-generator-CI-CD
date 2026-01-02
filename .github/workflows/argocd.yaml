@@ -69,7 +69,7 @@ jobs:
           helm repo add argo https://argoproj.github.io/argo-helm
           kubectl create namespace argocd
           helm install argocd -n argocd argo/argo-cd \
-          --set configs.secret.argocdServerAdminPassword="$PASSWORD_HASH"
+          --set configs.secret.argocdServerAdminPassword="$PASSWORD_HASH" \
           --set server.ingress.enabled=true \
           --set server.service.type=ClusterIP \
           --set configs.params."server\.insecure"=true \
