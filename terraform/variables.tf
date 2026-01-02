@@ -41,8 +41,3 @@ variable "aws_region" {
   default = "eu-west-2"
 }
 
-variable "argo_pass" {
-  type = string
-  description = "argocd admin password"
-  
-}

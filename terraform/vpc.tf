@@ -9,8 +9,8 @@ module "vpc" {
   azs            = var.vpc_azs
   public_subnets = var.vpc_pub_subnets
 
-  enable_nat_gateway     = true
-  single_nat_gateway     = true
+  enable_nat_gateway     = false
+  
   one_nat_gateway_per_az = false
 
   enable_dns_hostnames = true
