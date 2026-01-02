@@ -173,3 +173,4 @@ override.tf
 override.tf.json
 *.tfplan
 terraform/argocd.tf
+terraform/.terraform.lock.hcl
