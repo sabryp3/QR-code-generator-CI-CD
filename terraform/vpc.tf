@@ -8,9 +8,11 @@ module "vpc" {
 
   azs            = var.vpc_azs
   public_subnets = var.vpc_pub_subnets
+  private_subnets = var.vpc_priv_subnets
 
-  enable_nat_gateway     = false
-  
+
+  enable_nat_gateway     = true
+  single_nat_gateway     = true
   one_nat_gateway_per_az = false
 
   enable_dns_hostnames = true
@@ -18,6 +20,10 @@ module "vpc" {
 
   public_subnet_tags = {
     "kubernetes.io/role/elb" = 1
+  }
+
+  private_subnet_tags = {
+    "kubernetes.io/role/internal-elb" = 1
   }
 
   tags = var.tags
