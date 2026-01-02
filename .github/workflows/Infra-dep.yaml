@@ -65,4 +65,4 @@ jobs:
         if: steps.apply.outcome == 'success'
         run: aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER }} --region ${{ env.AWS_REGION }} 
 
-      - run: kubectl get node-version
+      - run: kubectl get nodes -o wide
