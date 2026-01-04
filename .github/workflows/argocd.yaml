@@ -70,7 +70,7 @@ jobs:
           PASSWORD_HASH=$(htpasswd -bnBC 10 "" "$ARGOCD_ADMIN_PASSWORD" | tr -d ':\n')
           helm repo add argo https://argoproj.github.io/argo-helm
           kubectl create namespace argocd
-          helm install argocd -n argocd argo/argo-cd \
+          helm upgrade -i argocd -n argocd argo/argo-cd \
           --set configs.secret.argocdServerAdminPassword="$PASSWORD_HASH" \
           --set server.ingress.enabled=true \
           --set server.service.type=ClusterIP \
