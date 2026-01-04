@@ -46,16 +46,13 @@ jobs:
       
       - name: Install Ingress controller
         run: |
-         # Check if NGINX controller deployment already exists
-         if kubectl get deployment -n ingress-nginx ingress-nginx-controller 2>/dev/null; then
-          echo "✅ NGINX Ingress controller already installed, skipping installation"
-         else
-          echo "📦 Installing NGINX Ingress controller..."
           helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
           helm repo update
           helm upgrade -i ingress-nginx ingress-nginx/ingress-nginx \
           --namespace ingress-nginx --create-namespace \
           --set controller.service.type=LoadBalancer \
+          --reuse-values \
+          --no-hooks \
           --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-type"="nlb"
         
       - run: kubectl get pods -n ingress-nginx
@@ -78,7 +75,9 @@ jobs:
           --set server.ingress.enabled=true \
           --set server.service.type=ClusterIP \
           --set configs.params."server\.insecure"=true \
-          --set server.ingress.ingressClassName=nginx 
+          --set server.ingress.ingressClassName=nginx \
+          --reuse-values \
+          --no-hooks 
       
       - run: kubectl get pods -n argocd
       - run: kubectl get svc -n argocd
