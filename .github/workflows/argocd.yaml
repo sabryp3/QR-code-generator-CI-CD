@@ -72,12 +72,13 @@ jobs:
           kubectl create namespace argocd
           helm upgrade -i argocd -n argocd argo/argo-cd \
           --set configs.secret.argocdServerAdminPassword="$PASSWORD_HASH" \
+          --set version 5.51.4 \
+          --set server.service.port=80 \
           --set server.ingress.enabled=true \
           --set server.service.type=ClusterIP \
           --set configs.params."server\.insecure"=true \
           --set server.ingress.ingressClassName=nginx \
-          --reuse-values \
-          --no-hooks 
+
       
       - run: kubectl get pods -n argocd
       - run: kubectl get svc -n argocd
