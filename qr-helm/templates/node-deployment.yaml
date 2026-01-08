@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.deploymentnode.name }}
+  labels:
+    app: node
+spec:
+  replicas: {{.Values.deploymentnode.replicas}}
+  selector:
+    matchLabels:
+      app: node
+  template:
+    metadata:
+      labels:
+        app: node
+    spec:
+      containers:
+      - name: {{ .Values.imagenode.name }}
+        image: abryp3/qrgenerator-nodejs:{{ .Values.imagenode.tag }}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: {{ .Values.nodePort }}

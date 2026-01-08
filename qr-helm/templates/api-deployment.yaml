@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.deployment.name }}
+  labels:
+    app: api
+spec:
+  replicas: {{.Values.deployment.replicas}}
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+      - name: {{ .Values.image.name }}
+        image: sabryp3/qrgenerator-api:{{ .Values.image.tag }}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: {{ .Values.containerPort }}

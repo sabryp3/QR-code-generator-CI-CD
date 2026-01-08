@@ -1,0 +1,21 @@
+deployment:
+  name: api-deployment
+  replicas: 2
+image:
+  name: qrgenerator-api
+  tag: latest
+containerPort: 8000
+service:
+  name: backend-api
+  port: 8000
+
+deploymentnode:
+  name: node-deployment
+  replicas: 1
+imagenode:
+  name: qrgenerator-node
+  tag: latest
+nodePort: 3000
+servicenode:
+  name: nodejs
+  port: 3000
