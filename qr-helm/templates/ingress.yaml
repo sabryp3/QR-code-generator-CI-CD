@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: qr-ingress
+spec:
+  ingressClassName: nginx-example
+  rules:
+  - http:
+      paths:
+      - path: /qr
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Values.servicenode.name }}
+            port:
+              number: {{ .Values.servicenode.port }}
