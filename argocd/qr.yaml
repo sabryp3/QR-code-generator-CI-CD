@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: QR-generator
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: qr-helm
+    repoURL: 'https://github.com/sabryp3/QR-code-generator-CI-CD.git'
+    path: qr-helm
+    targetRevision: 0.1.0
+    helm:
+      releaseName: httpd
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: default
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true

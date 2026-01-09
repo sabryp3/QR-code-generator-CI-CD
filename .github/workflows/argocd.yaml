@@ -53,7 +53,11 @@ jobs:
           --set controller.service.type=LoadBalancer \
           --reuse-values \
           --no-hooks \
-          --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-type"="nlb"
+          --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-type"="nlb" \
+          --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-backend-protocol"="tcp" \
+          --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-cross-zone-load-balancing-enabled"="true" \
+          --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-proxy-protocol"="*" \
+          --set controller.config.use-proxy-protocol="true"
         
       - run: kubectl get pods -n ingress-nginx
       
@@ -69,20 +73,18 @@ jobs:
         run: |
           PASSWORD_HASH=$(htpasswd -bnBC 10 "" "$ARGOCD_ADMIN_PASSWORD" | tr -d ':\n')
           helm repo add argo https://argoproj.github.io/argo-helm
-          kubectl create namespace argocd
-          helm upgrade -i argocd -n argocd argo/argo-cd \
+          helm upgrade -i argocd argo/argo-cd \
+          --namespace argocd \
+          --create-namespace \
+          --version 5.51.4 \
           --set configs.secret.argocdServerAdminPassword="$PASSWORD_HASH" \
-          --set version 5.51.4 \
-          --set server.service.port=80 \
           --set server.ingress.enabled=true \
           --set server.service.type=ClusterIP \
           --set configs.params."server\.insecure"=true \
           --set server.ingress.ingressClassName=nginx \
-
+          --set server.ingress.annotations."nginx\.ingress\.kubernetes\.io/force-ssl-redirect"="true" \
+          --set server.ingress.annotations."nginx\.ingress\.kubernetes\.io/backend-protocol"="HTTP"
       
       - run: kubectl get pods -n argocd
       - run: kubectl get svc -n argocd
       - run: kubectl get ingress -n argocd
-
-
-
