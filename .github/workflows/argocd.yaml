@@ -52,13 +52,13 @@ jobs:
           --namespace ingress-nginx --create-namespace \
           --set controller.service.type=LoadBalancer \
           --reuse-values \
-          --no-hooks \
           --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-type"="nlb" \
           --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-backend-protocol"="tcp" \
           --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-cross-zone-load-balancing-enabled"="true" \
           --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-proxy-protocol"="*" \
+          --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-nlb-target-type"="instance" \
           --set controller.config.use-proxy-protocol="true"
-        
+
       - run: kubectl get pods -n ingress-nginx
       
       - run: kubectl get svc -n ingress-nginx
@@ -71,19 +71,41 @@ jobs:
         env:
           ARGOCD_ADMIN_PASSWORD: ${{ secrets.ARGOCD_ADMIN_PASSWORD }}
         run: |
-          PASSWORD_HASH=$(htpasswd -bnBC 10 "" "$ARGOCD_ADMIN_PASSWORD" | tr -d ':\n')
+          PASSWORD_HASH=$(htpasswd -nbB admin "$ARGOCD_ADMIN_PASSWORD" | cut -d: -f2)
           helm repo add argo https://argoproj.github.io/argo-helm
           helm upgrade -i argocd argo/argo-cd \
           --namespace argocd \
           --create-namespace \
-          --version 5.51.4 \
           --set configs.secret.argocdServerAdminPassword="$PASSWORD_HASH" \
-          --set server.ingress.enabled=true \
           --set server.service.type=ClusterIP \
-          --set configs.params."server\.insecure"=true \
-          --set server.ingress.ingressClassName=nginx \
-          --set server.ingress.annotations."nginx\.ingress\.kubernetes\.io/force-ssl-redirect"="true" \
-          --set server.ingress.annotations."nginx\.ingress\.kubernetes\.io/backend-protocol"="HTTP"
+          --set configs.params."server\.insecure"=true
+           
+          
+      - name: Create ArgoCD Ingress
+        run: |
+          cat <<EOF | kubectl apply -f -
+          apiVersion: networking.k8s.io/v1
+          kind: Ingress
+          metadata:
+            name: argocd-server-ingress
+            namespace: argocd
+            annotations:
+              nginx.ingress.kubernetes.io/rewrite-target: /
+              nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+              nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+          spec:
+            ingressClassName: nginx
+            rules:
+            - http:
+                paths:
+                - path: /argocd
+                  pathType: Prefix
+                  backend:
+                    service:
+                      name: argocd-server
+                      port:
+                        number: 80
+          EOF
       
       - run: kubectl get pods -n argocd
       - run: kubectl get svc -n argocd
