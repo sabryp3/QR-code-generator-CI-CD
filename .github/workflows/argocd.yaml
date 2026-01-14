@@ -55,10 +55,8 @@ jobs:
           --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-type"="nlb" \
           --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-backend-protocol"="tcp" \
           --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-cross-zone-load-balancing-enabled"="true" \
-          --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-proxy-protocol"="*" \
           --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-nlb-target-type"="instance" \
           --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-scheme"="internet-facing" \
-          --set controller.config.use-proxy-protocol="true"
 
       - run: kubectl get pods -n ingress-nginx
       
@@ -79,6 +77,7 @@ jobs:
           --create-namespace \
           --set configs.secret.argocdServerAdminPassword="$PASSWORD_HASH" \
           --set server.service.type=ClusterIP \
+          --set server.rootPath="/argocd" \
           --set configs.params."server\.insecure"=true
            
           
@@ -91,8 +90,6 @@ jobs:
             name: argocd-server-ingress
             namespace: argocd
             annotations:
-              nginx.ingress.kubernetes.io/rewrite-target: /
-              nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
               nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
           spec:
             ingressClassName: nginx
