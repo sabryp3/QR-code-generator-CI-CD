@@ -18,5 +18,6 @@ spec:
       - name: {{ .Values.imagenode.name }}
         image: abryp3/qrgenerator-nodejs:{{ .Values.imagenode.tag }}
         imagePullPolicy: Always
+        
         ports:
         - containerPort: {{ .Values.nodePort }}
