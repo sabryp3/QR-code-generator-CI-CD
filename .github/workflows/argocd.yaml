@@ -79,7 +79,7 @@ jobs:
           --set server.service.type=ClusterIP \
           --set configs.params."server\.insecure"=true \
           --set server.ingress.enabled=true \
-          --set server.ingress.class=nginx \
+          --set server.ingress.class=nginx 
            
       - run: kubectl get pods -n argocd
       - run: kubectl get svc -n argocd
