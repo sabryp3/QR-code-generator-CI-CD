@@ -11,7 +11,7 @@ output "cluster_iam_role_name" {
 
 output "cluster_autoscaler_iam_role_arn" {
   description = "IAM role ARN for the cluster autoscaler"
-  value       = module.irsa_cluster_autoscaler.iam_role_arn
+  value       = module.irsa_cluster_autoscaler.arn
 }
 
 output "cluster_security_group_id" {
