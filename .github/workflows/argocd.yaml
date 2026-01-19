@@ -83,8 +83,7 @@ jobs:
           --set server.ingress.path="/argocd" \
           --set global.domain="" \
           --set configs.params."server\.basehref"="/argocd" \
-          --set configs.params."server\.rootpath"="/argocd" \
-          --set server.ingress.annotations."nginx\.ingress\.kubernetes\.io/rewrite-target"=/
+          --set configs.params."server\.rootpath"="/argocd"
            
       - run: kubectl get pods -n argocd
       - run: kubectl get svc -n argocd
