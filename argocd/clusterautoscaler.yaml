@@ -28,7 +28,7 @@ spec:
             create: true
             name: cluster-autoscaler
             annotations:
-              eks.amazonaws.com/role-arn: arn:aws:iam::864899862993:role/cluster-autoscaler-2026012012504637200000000c 
+              eks.amazonaws.com/role-arn: arn:aws:iam::864899862993:role/cluster-autoscaler-2026012023211083480000000c
   syncPolicy:
     automated:
       prune: true
