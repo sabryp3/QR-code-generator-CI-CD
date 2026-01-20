@@ -88,3 +88,12 @@ module "irsa_cluster_autoscaler" {
   }
 }
 
+resource "kubernetes_service_account" "cluster_autoscaler" {
+  metadata {
+    name      = "cluster-autoscaler"
+    namespace = "kube-system"
+    annotations = {
+      "eks.amazonaws.com/role-arn" = module.irsa_cluster_autoscaler.arn
+    }
+  }
+}
