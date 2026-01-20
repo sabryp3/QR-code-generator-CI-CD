@@ -11,14 +11,16 @@ spec:
   sources:
   - repoURL: https://kubernetes.github.io/autoscaler
     chart: cluster-autoscaler
+    targetRevision: 9.54.1
+    
     helm:
       values: |         
         autoDiscovery:
           # cloudProviders `aws`, `gce`, `azure`, `magnum` and `clusterapi` `oci-oke` are supported by auto-discovery at this time
           # AWS: Set tags as described in https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/cloudprovider/aws/README.md#auto-discovery-setup
-          clusterName: ${EKS_CLUSTER}
+          clusterName: my-eks
         # AWS_REGION
-        awsRegion: ${AWS_REGION}
+        awsRegion: eu-west-2
         # CLOUD_PROVIDER
         cloudProvider: aws
         rbac:
@@ -26,7 +28,7 @@ spec:
             create: true
             name: cluster-autoscaler
             annotations:
-              eks.amazonaws.com/role-arn: ${CLUSTER_AUTOSCALER_IAM_ROLE_ARN}
+              eks.amazonaws.com/role-arn: arn:aws:iam::864899862993:role/cluster-autoscaler-2026012012504637200000000c 
   syncPolicy:
     automated:
       prune: true
