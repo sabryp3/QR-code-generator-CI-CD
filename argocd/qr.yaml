@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: QR-generator
+  name: qrgenerator
   namespace: argocd
 spec:
   project: default
