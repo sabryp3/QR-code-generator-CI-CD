@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: qr-ingress
 spec:
-  ingressClassName: nginx-example
+  ingressClassName: nginx
   rules:
   - http:
       paths:
