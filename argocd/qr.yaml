@@ -6,12 +6,11 @@ metadata:
 spec:
   project: default
   source:
-    chart: qr-helm
     repoURL: 'https://github.com/sabryp3/QR-code-generator-CI-CD.git'
     path: qr-helm
-    targetRevision: 0.0.1
+    targetRevision: HEAD
     helm:
-      releaseName: httpd
+      releaseName: qrgenerator
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: default
