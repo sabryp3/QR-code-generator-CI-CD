@@ -1,5 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
+annotations:
+  nginx.ingress.kubernetes.io/rewrite-target: /
 metadata:
   name: qr-ingress
 spec:
