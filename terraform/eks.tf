@@ -7,7 +7,7 @@ module "eks" {
 
   addons = {
     coredns = {
-  
+       most_recent = true
     }
     eks-pod-identity-agent = {
       before_compute = true
