@@ -25,3 +25,4 @@ uvicorn
 pytest
 pytest-asyncio
 httpx
+prometheus_fastapi_instrumentator

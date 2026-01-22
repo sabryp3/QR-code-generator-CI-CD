@@ -4,12 +4,16 @@ import qrcode
 import boto3
 import os
 from io import BytesIO
+from prometheus_fastapi_instrumentator import Instrumentator
 
 # Loading Environment variable (AWS Access Key and Secret Key)
 from dotenv import load_dotenv
 load_dotenv()
 
 app = FastAPI()
+
+# Prometheus Instrumentation
+Instrumentator().instrument(app).expose(app)
 
 # Allowing CORS for local testing
 origins = [
