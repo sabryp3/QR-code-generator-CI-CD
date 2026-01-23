@@ -3,16 +3,24 @@ kind: Ingress
 metadata:
   name: qr-ingress
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/rewrite-target: /$
+    nginx.ingress.kubernetes.io/use-regex: true
 spec:
   ingressClassName: nginx
   rules:
   - http:
       paths:
-      - path: /qr
-        pathType: Prefix
+      - path: /qr(/|$)(.*)           # Capture path after /qr
+        pathType: ImplementationSpecific
         backend:
           service:
             name: {{ .Values.servicenode.name }}
             port:
               number: {{ .Values.servicenode.port }}
+      - path: /metrics               # No rewrite (exact prefix)
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Values.service.name }}
+            port:
+              number: {{ .Values.service.port }}
