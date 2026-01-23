@@ -20,7 +20,8 @@ resource "helm_release" "kube_prometheus_stack" {
     prometheus:
       enabled: true
       service:
-        type: ClusterIP 
+        type: ClusterIP
+      serviceMonitorSelector: {"release": "prometheus-operator"} 
       ingress:
         enabled: true
         ingressClassName: "nginx"     
