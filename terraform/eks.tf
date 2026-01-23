@@ -4,6 +4,7 @@ module "eks" {
 
   name               = var.eks-name
   kubernetes_version = var.eks-version
+  
 
   addons = {
     coredns = {
@@ -28,6 +29,9 @@ module "eks" {
   
   # Enable IRSA for clusterautosaler service account
   enable_irsa = true 
+  
+  cluster_endpoint_public_access = true
+  
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
