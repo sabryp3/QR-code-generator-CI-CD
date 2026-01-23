@@ -17,7 +17,7 @@ Instrumentator().instrument(app).expose(app)
 
 # Allowing CORS for local testing
 origins = [
-    "http://nextjs-service:3000"
+    "http://nodejs-service:3000"
 ]
 
 app.add_middleware(
