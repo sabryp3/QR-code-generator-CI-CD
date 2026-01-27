@@ -45,3 +45,9 @@ variable "aws_region" {
   default = "eu-west-2"
 }
 
+variable "argocd_admin_password_hash" {
+  description = "Bcrypt hash of the ArgoCD admin password."
+  type        = string
+  sensitive   = true
+}
+
