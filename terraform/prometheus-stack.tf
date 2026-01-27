@@ -50,5 +50,5 @@ resource "helm_release" "kube_prometheus_stack" {
           - "/grafana"
     EOT
   ]
-  depends_on = [ module.eks ]
+  depends_on = [ module.eks, helm_release.ingress_nginx ]
 }
