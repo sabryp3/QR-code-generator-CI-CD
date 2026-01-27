@@ -55,11 +55,17 @@ jobs:
       - name: Terraform plan status
         if: steps.plan.outcome == 'failure'
         run: exit 1
+      
+      - name: Install htpasswd and generate password hash
+        env:
+          ARGOCD_ADMIN_PASSWORD: ${{ secrets.ARGOCD_ADMIN_PASSWORD }}
+        run: |
+          sudo apt-get update && sudo apt-get install -y apache2-utils
+          PASSWORD_HASH=$(htpasswd -nbB admin "$ARGOCD_ADMIN_PASSWORD" | cut -d: -f2)
+          echo "TF_VAR_argocd_admin_password_hash=$PASSWORD_HASH" >> $GITHUB_ENV
 
       - name: Terraform apply
         id: apply
-        env:
-          TF_VAR_argocd_admin_password_hash: ${{ secrets.ARGOCD_ADMIN_PASSWORD_HASH }}
         run: terraform apply -auto-approve -input=false -parallelism=1 planfile
     
       - name: Get Kubernetes config
