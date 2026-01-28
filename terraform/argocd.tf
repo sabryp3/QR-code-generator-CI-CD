@@ -48,7 +48,7 @@ resource "helm_release" "argocd" {
     value = "/argocd"
   }
 
-  set =  {
+  set {
     name = "global.domain"
     value = ""
   } 
