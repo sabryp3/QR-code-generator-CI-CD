@@ -19,13 +19,17 @@ resource "helm_release" "argocd" {
   }
 
   set {
+    name  = "configs.params.server\\.insecure"
+    value = "true"  # This disables TLS on ArgoCD server
+  }
+  set {
     name  = "server.ingress.enabled"
     value = "true"
   }
 
   set {
     name  = "server.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/backend-protocol"
-    value = "HTTPS"
+    value = "HTTP"
   }
 
   set {
@@ -39,12 +43,12 @@ resource "helm_release" "argocd" {
   }
 
   set {
-    name  = "configs.params.server.basehref"
+    name  = "configs.params.server\\.basehref"
     value = "/argocd"
   }
 
   set {
-    name  = "configs.params.server.rootpath"
+    name  = "configs.params.server\\.rootpath"
     value = "/argocd"
   }
 
