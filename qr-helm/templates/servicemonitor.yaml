@@ -4,7 +4,7 @@ metadata:
   name: default-service-monitor
   namespace: default
   labels:
-    release: prometheus-operator # based on your Prometheus Operator label selector
+    release: prometheus-stack # based on your Prometheus Operator label selector
 spec:
   endpoints:
     - interval: 10s
