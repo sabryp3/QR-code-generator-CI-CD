@@ -1,7 +1,7 @@
 terraform {
   required_version = "~> 1.0"
   backend "s3" {
-    bucket         = "infrabucket-p3"
+    bucket         = "infrabucket-s3"
     key            = "terraform/state.tfstate"
     region         = "eu-west-2"
     dynamodb_table = "tf-db-table"
