@@ -39,9 +39,15 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
+      - name: Install htpasswd and generate password hash
+        run: |
+          sudo apt-get update && sudo apt-get install -y apache2-utils
+          PASSWORD_HASH=$(htpasswd -nbB admin "$ARGOCD_ADMIN_PASSWORD" | cut -d: -f2)
+          echo "TF_VAR_argocd_admin_password_hash=$PASSWORD_HASH" >> $GITHUB_ENV
+
       - name: Terraform init
         id: init
-        run: terraform init 
+        run: terraform init
 
       - name: Terraform validate
         id: validate
@@ -50,18 +56,6 @@ jobs:
       - name: Terraform plan
         id: plan
         run: terraform plan -no-color -input=false -out planfile
-        continue-on-error: true
-       
-
-      - name: Terraform plan status
-        if: steps.plan.outcome == 'failure'
-        run: exit 1
-      
-      - name: Install htpasswd and generate password hash   
-        run: |
-          sudo apt-get update && sudo apt-get install -y apache2-utils
-          PASSWORD_HASH=$(htpasswd -nbB admin "$ARGOCD_ADMIN_PASSWORD" | cut -d: -f2)
-          echo "TF_VAR_argocd_admin_password_hash=$PASSWORD_HASH" >> $GITHUB_ENV
 
       - name: Terraform apply
         id: apply
