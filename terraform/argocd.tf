@@ -19,13 +19,13 @@ resource "helm_release" "argocd" {
   }
 
   set {
-    name  = "configs.params.server.insecure"
+    name  = "server.ingress.enabled"
     value = "true"
   }
 
   set {
-    name  = "server.ingress.enabled"
-    value = "true"
+    name  = "server.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/backend-protocol"
+    value = "HTTPS"
   }
 
   set {
