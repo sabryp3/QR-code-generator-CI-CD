@@ -12,6 +12,7 @@ env:
   S3_BUCKET: ${{ vars.S3_BUCKET_NAME }}
   AWS_REGION: ${{ vars.AWS_REGION }}
   EKS_CLUSTER: ${{ vars.EKS_CLUSTER }}
+  ARGOCD_ADMIN_PASSWORD: ${{ secrets.ARGOCD_ADMIN_PASSWORD }}
 
 # Define Jobs
 jobs:
@@ -56,9 +57,7 @@ jobs:
         if: steps.plan.outcome == 'failure'
         run: exit 1
       
-      - name: Install htpasswd and generate password hash
-        env:
-          ARGOCD_ADMIN_PASSWORD: ${{ secrets.ARGOCD_ADMIN_PASSWORD }}
+      - name: Install htpasswd and generate password hash   
         run: |
           sudo apt-get update && sudo apt-get install -y apache2-utils
           PASSWORD_HASH=$(htpasswd -nbB admin "$ARGOCD_ADMIN_PASSWORD" | cut -d: -f2)
