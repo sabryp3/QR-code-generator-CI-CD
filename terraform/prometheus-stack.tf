@@ -41,13 +41,13 @@ resource "helm_release" "kube_prometheus_stack" {
         type: ClusterIP
       ingress:
         enabled: true
-        ingressClassName: "nginx" 
-        annotations:
-            nginx.ingress.kubernetes.io/rewrite-target: /
+        ingressClassName: "nginx"     
         hosts:
           - ""
         paths:
           - "/grafana"
+        annotations:
+            nginx.ingress.kubernetes.io/rewrite-target: /
     EOT
   ]
   depends_on = [ module.eks, helm_release.ingress_nginx ]
