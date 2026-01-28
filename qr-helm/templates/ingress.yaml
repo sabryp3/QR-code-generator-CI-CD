@@ -10,7 +10,7 @@ spec:
   rules:
   - http:
       paths:
-      - path: /qr(/|$)(.*)           # Capture path after /qr
+      - path: /qr(/?|$)(.*)           # Capture path after /qr
         pathType: ImplementationSpecific
         backend:
           service:
