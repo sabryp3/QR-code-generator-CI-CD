@@ -34,7 +34,7 @@ resource "helm_release" "argocd" {
   }
 
   set {
-    name  = "server.ingress.paths[0]"
+    name  = "server.ingress.path"
     value = "/argocd"
   }
 
@@ -47,6 +47,11 @@ resource "helm_release" "argocd" {
     name  = "configs.params.server.rootpath"
     value = "/argocd"
   }
+
+  set =  {
+    name = "global.domain"
+    value = ""
+  } 
 
   depends_on = [
     helm_release.ingress_nginx

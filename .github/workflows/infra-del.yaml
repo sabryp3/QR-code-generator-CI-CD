@@ -12,6 +12,7 @@ env:
   S3_BUCKET: ${{ vars.S3_BUCKET_NAME }}
   AWS_REGION: ${{ vars.AWS_REGION }}
   EKS_CLUSTER: ${{ vars.EKS_CLUSTER }}
+  ARGOCD_ADMIN_PASSWORD: ${{ secrets.ARGOCD_ADMIN_PASSWORD }}
 
 # Define Jobs
 jobs:
@@ -53,6 +54,12 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
+
+      - name: Install htpasswd and generate password hash
+        run: |
+          sudo apt-get update && sudo apt-get install -y apache2-utils
+          PASSWORD_HASH=$(htpasswd -nbB admin "$ARGOCD_ADMIN_PASSWORD" | cut -d: -f2)
+          echo "TF_VAR_argocd_admin_password_hash=$PASSWORD_HASH" >> $GITHUB_ENV
 
       - name: Terraform init
         id: init
