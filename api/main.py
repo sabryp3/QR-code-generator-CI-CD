@@ -65,5 +65,6 @@ async def generate_qr(url: str):
         s3_url = f"https://{bucket_name}.s3.amazonaws.com/{file_name}"
         return {"qr_code_url": s3_url}
     except Exception as e:
+        print(f"Error during S3 upload: {e}")
         raise HTTPException(status_code=500, detail=str(e))
     
