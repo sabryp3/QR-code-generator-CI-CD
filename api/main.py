@@ -16,9 +16,7 @@ app = FastAPI()
 Instrumentator().instrument(app).expose(app)
 
 # Allowing CORS for local testing
-origins = [
-    "http://nodejs-service:3000"
-]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,

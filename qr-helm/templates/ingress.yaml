@@ -17,6 +17,13 @@ spec:
             name: {{ .Values.servicenode.name }}
             port:
               number: {{ .Values.servicenode.port }}
+      - path: /api(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: {{ .Values.service.name }}
+            port:
+              number: {{ .Values.service.port }}
       - path: /metrics               # No rewrite (exact prefix)
         pathType: Prefix
         backend:
