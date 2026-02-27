@@ -17,60 +17,15 @@ permissions:
   contents: read
 
 # Define Jobs
-jobs:
-  provision-oidc:
-    name: "Provision OIDC for GitHub Actions"
-    runs-on: ubuntu-latest
-    
-    outputs:
-      role_arn: ${{ steps.oidc_apply.outputs.role_arn }}
-
-    steps:
-      - name: Checkout source code
-        uses: actions/checkout@v4
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-
-      - name: Configure AWS credentials for OIDC
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          # This role is for the initial OIDC setup
-          role-to-assume: ${{ needs.provision-oidc.outputs.role_arn }} 
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Terraform Init for OIDC
-        working-directory: ./terraform/OIDC
-        run: terraform init
-
-      - name: Terraform Validate for OIDC
-        working-directory: ./terraform/OIDC
-        run: terraform validate
-
-      - name: Terraform Plan for OIDC
-        working-directory: ./terraform/OIDC
-        run: terraform plan -no-color -out=planfile
-
-      - name: Terraform Apply for OIDC
-        working-directory: ./terraform/OIDC
-        run: |
-          terraform apply -auto-approve -input=false planfile
-      - name: Extract OIDC Role ARN
-        id: extract_oidc_role_arn
-        run: |
-          ROLE_ARN=$(terraform output -raw github_actions_role_arn)
-          echo "role_arn=$ROLE_ARN" >> $GITHUB_OUTPUT
-        working-directory: ./terraform/OIDC
-
+jobs: 
   provision-infra:
     name: "Deploy Infrastructure with Terraform"
     runs-on: ubuntu-latest
-    needs: provision-oidc # Ensures OIDC is provisioned first
 
     defaults:
       run:
         shell: bash
-        working-directory: ./terraform/Infra
+        working-directory: ./terraform
 
     steps:
       - name: Checkout source code
@@ -82,7 +37,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ needs.provision-oidc.outputs.role_arn }}
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Install htpasswd and generate ArgoCD admin password hash
