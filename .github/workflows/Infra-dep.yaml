@@ -1,69 +1,117 @@
 # Workflow Name
-name: "infra-provisioning"
+name: "Infrastructure Provisioning"
 
 # Workflow Triggers
 on:
-  workflow_dispatch: # Enables manual trigger for destroy job
+  workflow_dispatch: # Enables manual trigger for the workflow
 
 # Environment Variables
 env:
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   S3_BUCKET: ${{ vars.S3_BUCKET_NAME }}
   AWS_REGION: ${{ vars.AWS_REGION }}
   EKS_CLUSTER: ${{ vars.EKS_CLUSTER }}
   ARGOCD_ADMIN_PASSWORD: ${{ secrets.ARGOCD_ADMIN_PASSWORD }}
 
+permissions:
+  id-token: write
+  contents: read
+
 # Define Jobs
 jobs:
-  terraform:
-    name: "Deploy Infra with Terraform on AWS"
+  provision-oidc:
+    name: "Provision OIDC for GitHub Actions"
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        shell: bash
-        working-directory: ./terraform
+    
+    outputs:
+      role_arn: ${{ steps.oidc_apply.outputs.role_arn }}
 
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-     
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Install htpasswd and generate password hash
+      - name: Configure AWS credentials for OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          # This role is for the initial OIDC setup
+          role-to-assume: ${{ needs.provision-oidc.outputs.role_arn }} 
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Terraform Init for OIDC
+        working-directory: ./terraform/OIDC
+        run: terraform init
+
+      - name: Terraform Validate for OIDC
+        working-directory: ./terraform/OIDC
+        run: terraform validate
+
+      - name: Terraform Plan for OIDC
+        working-directory: ./terraform/OIDC
+        run: terraform plan -no-color -out=planfile
+
+      - name: Terraform Apply for OIDC
+        working-directory: ./terraform/OIDC
         run: |
+          terraform apply -auto-approve -input=false planfile
+      - name: Extract OIDC Role ARN
+        id: extract_oidc_role_arn
+        run: |
+          ROLE_ARN=$(terraform output -raw github_actions_role_arn)
+          echo "role_arn=$ROLE_ARN" >> $GITHUB_OUTPUT
+        working-directory: ./terraform/OIDC
+
+  provision-infra:
+    name: "Deploy Infrastructure with Terraform"
+    runs-on: ubuntu-latest
+    needs: provision-oidc # Ensures OIDC is provisioned first
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./terraform/Infra
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ needs.provision-oidc.outputs.role_arn }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Install htpasswd and generate ArgoCD admin password hash
+        run: |
+          # apache2-utils is required for htpasswd to generate a bcrypt hash for the ArgoCD admin password.
           sudo apt-get update && sudo apt-get install -y apache2-utils
           PASSWORD_HASH=$(htpasswd -nbB admin "$ARGOCD_ADMIN_PASSWORD" | cut -d: -f2)
           echo "TF_VAR_argocd_admin_password_hash=$PASSWORD_HASH" >> $GITHUB_ENV
+        working-directory: . # Run in the root directory
 
-      - name: Terraform init
-        id: init
+      - name: Terraform Init for Infra
         run: terraform init
 
-      - name: Terraform validate
-        id: validate
+      - name: Terraform Validate for Infra
         run: terraform validate
 
-      - name: Terraform plan
-        id: plan
-        run: terraform plan -no-color -input=false -out planfile
+      - name: Terraform Plan for Infra
+        run: terraform plan -no-color -out=planfile
 
-      - name: Terraform apply
-        id: apply
-        run: terraform apply -auto-approve -input=false -parallelism=1 planfile
-    
+      - name: Terraform Apply for Infra
+        id: infra_apply
+        run: terraform apply -auto-approve -input=false planfile
+
       - name: Get Kubernetes config
-        id: getconfig
-        if: steps.apply.outcome == 'success'
-        run: aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER }} --region ${{ env.AWS_REGION }} 
+        if: steps.infra_apply.outcome == 'success'
+        run: aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER }} --region ${{ env.AWS_REGION }}
+        working-directory: . # Run in the root directory
 
-      - run: kubectl get nodes -o wide
+      - name: Verify cluster connectivity
+        if: steps.infra_apply.outcome == 'success'
+        run: kubectl get nodes -o wide
+        working-directory: . # Run in the root directory

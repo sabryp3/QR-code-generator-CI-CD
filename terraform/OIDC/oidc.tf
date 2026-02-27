@@ -33,7 +33,7 @@ data "aws_iam_policy_document" "github_trust" {
       test     = "StringLike"
       variable = "token.actions.githubusercontent.com:sub"
       values   = [
-        "repo:sabryp3/QR-code-generator-CI-CD:*",
+        "repo:ahmsabry/devops-qr-code:*",
       ]
     }
   }
