@@ -9,6 +9,9 @@ jobs:
     env:
       S3_BUCKET_NAME: ${{ vars.S3_BUCKET_NAME }}
       AWS_REGION: ${{ vars.AWS_REGION }}
+    permissions:
+      contents: read          # Required to checkout and read repo files
+      security-events: write  # Required to upload SARIF files to Security tab
 
     steps:
       - uses: actions/checkout@v4
@@ -59,20 +62,45 @@ jobs:
         id: tag
         run: echo "TAG=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       
-      - name: Build and push
+      - name: Build image
         uses: docker/build-push-action@v6
         with:
-          push: true
+          push: false
+          load: true
           tags: |
             sabryp3/qrgenerator-api:latest
             sabryp3/qrgenerator-api:${{steps.tag.outputs.TAG}}
           file: api/Dockerfile
+
+      - name: Scan Docker image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'sabryp3/qrgenerator-api:latest'
+          format: 'sarif'
+          exit-code: '1'
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+          output-file: 'trivy-api-results.sarif'
+      
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: 'trivy-api-results.sarif'
+
+      - name: Push image
+        run: |
+          docker push sabryp3/qrgenerator-api:latest
+          docker push sabryp3/qrgenerator-api:${{steps.tag.outputs.TAG}}
 
   buildnode:
     runs-on: ubuntu-latest
     env:
       S3_BUCKET_NAME: ${{ vars.S3_BUCKET_NAME }}
       AWS_REGION: ${{ vars.AWS_REGION }}
+    
+    permissions:
+      contents: read          # Required to checkout and read repo files
+      security-events: write  # Required to upload SARIF files to Security tab
 
     steps:
       - uses: actions/checkout@v4
@@ -104,12 +132,33 @@ jobs:
         id: tag
         run: echo "TAG=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       
-      - name: Build and push
+      - name: Build image
         uses: docker/build-push-action@v6
         with:
-          push: true
+          push: false
+          load: true
           tags: |
             sabryp3/qrgenerator-nodejs:latest
             sabryp3/qrgenerator-nodejs:${{steps.tag.outputs.TAG}}
           file: front-end-nextjs/Dockerfile
           context: front-end-nextjs
+
+      - name: Scan Docker image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'sabryp3/qrgenerator-nodejs:latest'
+          format: 'sarif'
+          exit-code: '1'
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+          output-file: 'trivy-node-results.sarif'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: 'trivy-node-results.sarif'
+
+      - name: Push image
+        run: |
+          docker push sabryp3/qrgenerator-nodejs:latest
+          docker push sabryp3/qrgenerator-nodejs:${{steps.tag.outputs.TAG}}
