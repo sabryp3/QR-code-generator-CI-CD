@@ -16,7 +16,8 @@ env:
 
 permissions:
   id-token: write
-  contents: read
+  contents: read          # Required to checkout and read repo files
+  security-events: write  # Required to upload SARIF files to Security tab
 
 # Define Jobs
 jobs: 
