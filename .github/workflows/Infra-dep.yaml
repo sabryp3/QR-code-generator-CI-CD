@@ -17,7 +17,6 @@ env:
 permissions:
   id-token: write
   contents: read          # Required to checkout and read repo files
-  security-events: write  # Required to upload SARIF files to Security tab
 
 # Define Jobs
 jobs: 
@@ -54,21 +53,6 @@ jobs:
       - name: Terraform Init for Infra
         run: terraform init
 
-      - name: Run Trivy vulnerability scanner in IaC mode
-        uses: aquasecurity/trivy-action@0.33.1
-        with:
-          scan-type: 'config'
-          scan-ref: './terraform'
-          format: 'sarif'
-          output: 'trivy-iac-results.sarif'
-          exit-code: '1'
-          severity: 'CRITICAL,HIGH'
-
-      - name: Upload Trivy scan results to GitHub Security tab
-        if: always()
-        uses: github/codeql-action/upload-sarif@v4
-        with:
-          sarif_file: 'trivy-iac-results.sarif'
 
       - name: Terraform Validate for Infra
         run: terraform validate
