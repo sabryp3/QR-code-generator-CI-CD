@@ -57,9 +57,9 @@ Monitoring: Prometheus & Grafana
 | **Frontend**        | Next.js, Node.js 24                                                              |
 | **Backend**         | Python 3.12, FastAPI                                                             |
 | **Infrastructure**  | AWS (EKS, VPC, S3), Terraform ~1.0                                               |
-| **CI/CD**           | GitHub Actions, Docker, Docker Buildx, Helm, ArgoCD                              |
+| **CI/CD**           | GitHub Actions, Helm, ArgoCD                                                     |
 | **Monitoring**      | Prometheus, Grafana                                                              |
-| **Security**        | SonarCloud, Trivy (container & IaC), IAM IRSA, RBAC, Bcrypt                      |
+| **Security**        | SonarCloud, Trivy (container), OIDC authentication                               |
 | **Networking**      | NGINX Ingress, VPC with public/private subnets, TLS/HTTPS                        |
 
 # ✅ Prerequisites
@@ -71,13 +71,15 @@ kubectl configured
 
 GitHub Actions enabled on your repository
 
+OIDC authentication configured with your Github repository
+
 Environment variables set:
 
 S3_BUCKET_NAME, AWS_REGION, EKS_CLUSTER
 
 GitHub Secrets configured:
 
-SONAR_TOKEN, DOCKERHUB_TOKEN, AWS_ROLE_ARN, ARGOCD_ADMIN_PASSWORD
+SONAR_TOKEN, DOCKERHUB_TOKEN, AWS_ROLE_ARN (for OIDC integration), ARGOCD_ADMIN_PASSWORD
 
 # 🔄 CI/CD Pipeline Workflows
 **1. CI.yml – Build & Push Docker Images**
@@ -96,7 +98,7 @@ SONAR_TOKEN, DOCKERHUB_TOKEN, AWS_ROLE_ARN, ARGOCD_ADMIN_PASSWORD
 
 ✅ Terraform validation and planning
 
-🛡️ IaC security scanning with Trivy
+🛡️ request OIDC token for aws authentication
 
 ☸️ EKS cluster provisioning
 
