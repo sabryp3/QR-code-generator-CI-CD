@@ -1,4 +1,4 @@
-📋 Project Overview
+📋 # Project Overview
 QR code generator application with CI/CD pipeline
 Frontend (NextJS), Backend (Python FastAPI), Infrastructure (AWS EKS)
 📁 Repository Layout
