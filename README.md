@@ -1,6 +1,13 @@
 # **📱 QR Code Generator with CI/CD Pipeline**
 <p align="center"> <img src="https://img.shields.io/badge/Next.js-14-black?style=flat-square&logo=next.js" alt="Next.js"> <img src="https://img.shields.io/badge/FastAPI-0.115-009688?style=flat-square&logo=fastapi" alt="FastAPI"> <img src="https://img.shields.io/badge/AWS-EKS-FF9900?style=flat-square&logo=amazon-aws" alt="AWS EKS"> <img src="https://img.shields.io/badge/Terraform-1.0-844FBA?style=flat-square&logo=terraform" alt="Terraform"> <img src="https://img.shields.io/badge/ArgoCD-2.0-EF7B4D?style=flat-square&logo=argo" alt="ArgoCD"> <img src="https://img.shields.io/badge/Kubernetes-1.28-326CE5?style=flat-square&logo=kubernetes" alt="Kubernetes"> <img src="https://img.shields.io/badge/GitHub%20Actions-CI/CD-2088FF?style=flat-square&logo=github-actions" alt="GitHub Actions"> </p>
-A complete QR code generator application featuring a Next.js frontend, FastAPI backend, and a production-grade CI/CD pipeline that provisions infrastructure on AWS EKS using Terraform, GitHub Actions, and ArgoCD for GitOps.
+This project implements a complete DevSecOps pipeline that provisions AWS infrastructure (VPC, EKS), deploys a Node.js/FastAPI application using Argocd on EKS, and integrates CI/CD with GitHub Actions for secure, automated builds.
+
+The pipeline features:
+
+Infrastructure as Code with Terraform 
+CI/CD automation with GitHub Actions and AWS OIDC
+Security scanning with SonarQube (code) and Trivy (container)
+ArgoCD-based Kubernetes deployment on EKS
 
 # 📋 Project Overview
 
@@ -12,6 +19,8 @@ Infrastructure: AWS EKS, VPC, S3 (Terraform)
 
 CI/CD: GitHub Actions, Docker, Helm, ArgoCD
 
+Security: SonarQube, Trivy, OIDC
+
 Monitoring: Prometheus & Grafana
 
 # 📁 Repository Layout
@@ -22,7 +31,7 @@ Monitoring: Prometheus & Grafana
 ├── terraform/                 # Infrastructure as Code (AWS EKS, VPC, S3)
 ├── .github/workflows/         # CI/CD pipelines (GitHub Actions)
 ├── argocd/                    # GitOps configuration
-└── qr-helm/                   # Kubernetes Helm charts
+└── qr-helm/                   # Kubernetes Helm charts to be used by ArgoCD
 ```
 # ✨ Features
 ✅ Generate QR codes from any URL
