@@ -1,42 +1,40 @@
-# QR Code Generator CI/CD
+# Project Overview
+This repository contains a CI/CD pipeline for generating QR codes. The project automates the process of building, testing, and deploying QR code generation applications.
 
-## Project Overview
-This repository contains a CI/CD pipeline for a QR Code Generator application. The pipeline is designed to automate the build, test, and deployment processes, ensuring a smooth integration of code changes into the production environment.
+# Repository Layout
+- **/src**: Contains the source code for the QR code generator.
+- **/tests**: Contains unit and integration tests for the application.
+- **/docs**: Contains project documentation and related resources.
+- **.github/workflows**: Contains CI/CD pipeline configuration files.
 
-## Repository Layout
-- `src/`: Contains the source code for the QR Code Generator application.
-- `tests/`: Contains unit and integration tests for the application.
-- `ci/`: Configuration files and scripts related to the CI/CD pipeline.
-- `README.md`: Project documentation.
+# Features
+- QR code generation from URLs, text, and other formats.
+- Custom styling options for generated QR codes.
+- Ability to save and share QR codes.
+- User-friendly interface for easy access.
 
-## Features
-- Generate QR codes from user inputs.
-- Download generated QR codes.
-- Responsive design for various devices.
-- Support for dynamic QR codes.
-
-## Technologies
-- **Programming Language:** Python
-- **Web Framework:** Flask
-- **Testing Framework:** Pytest
-- **CI/CD Tool:** GitHub Actions
-
-## Prerequisites
-- Python 3.x
+# Technologies
+- Python
 - Flask
-- Required Python packages listed in `requirements.txt`
+- Docker
+- GitHub Actions
+- PostgreSQL
 
-## Pipeline Workflow
-1. **Code is pushed** to the repository.
-2. **GitHub Actions** detects the change and triggers the CI workflow.
-3. **Build stage:** Code is built and dependencies are installed.
-4. **Test stage:** Automated tests are run to ensure code quality.
-5. **Deployment:** If tests pass, the application is deployed to the production environment.
+# Prerequisites
+- Python 3.x
+- Docker
+- Git
+- Access to a PostgreSQL server (for production environments)
 
-## Security Features
-- **Secret Management:** Sensitive information is stored as GitHub Secrets.
-- **Dependency Scanning:** Automated scanning of dependencies for vulnerabilities.
-- **Code Quality Checks:** Linter is used to enforce coding standards and best practices.
+# CI/CD Pipeline Workflow
+1. Code is pushed to the main branch.
+2. CI/CD pipeline triggers automatically via GitHub Actions.
+3. Pipeline builds the Docker image and runs unit tests.
+4. If tests pass, the application is deployed to the production server.
 
-## Contribution
-Contributions are welcome! Please open an issue or submit a pull request for any changes you would like to propose.
+# Security Features
+- All sensitive data is stored in environment variables.
+- Regular security audits are performed on dependencies.
+- HTTPS is enforced for all communications.
+- User inputs are validated and sanitized.
+
