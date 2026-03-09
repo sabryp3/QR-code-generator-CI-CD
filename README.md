@@ -10,6 +10,34 @@ Security scanning with SonarQube (code) and Trivy (container)
 ArgoCD-based Kubernetes deployment on EKS
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ![CI/CD](argo.drawio.svg)
 
 # 📋 Project Overview
