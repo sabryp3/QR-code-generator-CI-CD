@@ -4,38 +4,12 @@ This project implements a complete DevSecOps pipeline that provisions AWS infras
 
 The pipeline features:
 
-Infrastructure as Code with Terraform 
-CI/CD automation with GitHub Actions and AWS OIDC
-Security scanning with SonarQube (code) and Trivy (container)
-ArgoCD-based Kubernetes deployment on EKS
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+- Infrastructure as Code (IaC) using Terraform for provisioning AWS resources
+- CI/CD automation powered by GitHub Actions with secure AWS OIDC authentication
+- Security scanning integrated into the pipeline:
+   - SonarQube for static code analysis
+   - Trivy for container vulnerability scanning
+- GitOps deployment using ArgoCD to continuously sync and deploy workloads to Amazon EKS
 
 
 ![CI/CD](argo.drawio.svg)
